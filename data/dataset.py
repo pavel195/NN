@@ -19,7 +19,7 @@ class LFWDataset(Dataset):
     Генерирует пары изображений: положительные (одно лицо) и отрицательные (разные лица).
     """
     
-    def __init__(self, data_dir, pairs_file=None, transform=None, mode='train'):
+    def __init__(self, data_dir, pairs_file=None, transform=None, mode='train', allowed_persons=None):
         """
         Инициализация датасета.
         
@@ -28,6 +28,7 @@ class LFWDataset(Dataset):
             pairs_file: путь к файлу с парами (опционально)
             transform: трансформации для изображений
             mode: режим ('train', 'val', 'test')
+            allowed_persons: множество разрешенных людей для данного режима (для разделения train/val/test)
         """
         self.data_dir = data_dir
         self.transform = transform
@@ -35,6 +36,12 @@ class LFWDataset(Dataset):
         
         # Загружаем все изображения и их метки
         self.images, self.labels = self._load_images()
+        
+        # Фильтруем по разрешенным людям, если указано
+        if allowed_persons is not None:
+            filtered_indices = [i for i, label in enumerate(self.labels) if label in allowed_persons]
+            self.images = [self.images[i] for i in filtered_indices]
+            self.labels = [self.labels[i] for i in filtered_indices]
         
         # Создаем словарь: метка -> список индексов изображений
         self.label_to_indices = {}
