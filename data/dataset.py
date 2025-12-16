@@ -194,12 +194,6 @@ def split_dataset(data_dir, train_ratio=0.7, val_ratio=0.15, test_ratio=0.15):
     Returns:
         словарь с путями к директориям для каждого множества
     """
-    # Создаем временные директории для разделения
-    base_dir = os.path.dirname(data_dir)
-    train_dir = os.path.join(base_dir, 'lfw_train')
-    val_dir = os.path.join(base_dir, 'lfw_val')
-    test_dir = os.path.join(base_dir, 'lfw_test')
-    
     # Загружаем всех людей
     persons = [d for d in os.listdir(data_dir) 
                if os.path.isdir(os.path.join(data_dir, d))]
@@ -212,8 +206,6 @@ def split_dataset(data_dir, train_ratio=0.7, val_ratio=0.15, test_ratio=0.15):
         temp_persons, test_size=test_ratio / (val_ratio + test_ratio), random_state=42
     )
     
-    # Создаем директории и копируем файлы (в реальности лучше использовать симлинки)
-    # Для упрощения, будем использовать исходную директорию и фильтровать по списку людей
     return {
         'train': (data_dir, train_persons),
         'val': (data_dir, val_persons),
